@@ -42,6 +42,19 @@ app.get("/user",[
     }
 ])
 
-app.use("/",(req,res)=>{res.send("Hello from the server root")})
+app.use("/",(req,res,next)=>{
+    try{
+        throw new Error("abcdefg");        
+        res.send("Hello from the server root")
+}
+catch(err){
+    next(err)
+}
+})
+app.use("/",(err,req,res,next)=>{
+    res.status(500).send("Error occured contact support");
+
+})
+    
 
 app.listen(7777,()=>{console.log("Hello listening to port 7777")});
