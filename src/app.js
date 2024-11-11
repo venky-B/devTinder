@@ -1,7 +1,45 @@
-let express = require('express');
-const { adminAuth } = require('./middlewares/auth');
-
+const express = require('express');
+// const { adminAuth } = require('./middlewares/auth');
+const connectDB = require("./config/database");
+const User = require("./models/user");
 const app = express();
+
+app.use(express.json());
+
+app.post("/signup", async (req, res) => {
+    const user = new User(req.body);
+
+try {
+    await user.save();
+    res.send("user added successfully")
+    
+}
+catch(err) {
+    console.error("Error saving the user:", err);
+    res.status(400).send("Error saving the user: " + err.message)
+}
+});
+
+connectDB()
+.then(()=>{
+    console.log("DB connection established successfully");
+    app.listen(7777,()=>{console.log("Hello listening to port 7777")});
+})
+.catch((err)=>{console.log("DB connection failed")});
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
 
 //middleware adminAuth to authonticate which handles for all methods GET, POST, PUT etc
 app.use("/admin", adminAuth)
@@ -55,6 +93,6 @@ app.use("/",(err,req,res,next)=>{
     res.status(500).send("Error occured contact support");
 
 })
-    
 
-app.listen(7777,()=>{console.log("Hello listening to port 7777")});
+*/
+    
