@@ -15,10 +15,27 @@ try {
     
 }
 catch(err) {
-    console.error("Error saving the user:", err);
     res.status(400).send("Error saving the user: " + err.message)
 }
 });
+
+app.get("/user", async(req,res)=>{
+
+    const userEmail = req.body.emailId;
+
+    try{
+        const users = await User.findOne({emailId : userEmail})
+        res.send(users);
+
+    }
+    catch(err){
+        res.send("Error " + err.message);
+
+    }
+
+})
+
+
 
 connectDB()
 .then(()=>{
@@ -93,6 +110,9 @@ app.use("/",(err,req,res,next)=>{
     res.status(500).send("Error occured contact support");
 
 })
+
+
+
 
 */
     
