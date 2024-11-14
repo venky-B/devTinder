@@ -35,6 +35,35 @@ app.get("/user", async(req,res)=>{
 
 })
 
+app.delete("/user", async(req,res)=>{
+   const userId =  req.body.userId;
+   try{
+    const users = await User.findByIdAndDelete({_id:userId});
+    //const users = await User.findByIdAndDelete(userId);
+    if(users) res.send(users);
+    else res.send("There is nothting to delete");
+    
+}
+catch(err){
+    res.status(400).send("Something went wrong : " + err.message);
+}
+    
+})
+
+app.patch("/user",async(req,res)=>{
+
+    const emailId = req.body.emailId;
+    const data = req.body;
+    
+    try{
+        const updateVal = await User.findOneAndUpdate({emailId:emailId},data,{returnDocument:"after"})
+        console.log(updateVal);
+        res.send(updateVal);
+    }
+    catch(err){
+        res.send("Something went wrong : " + err.message)
+    }
+})
 
 
 connectDB()
