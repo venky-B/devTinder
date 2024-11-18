@@ -50,13 +50,21 @@ catch(err){
     
 })
 
-app.patch("/user",async(req,res)=>{
+app.patch("/user/:userId",async(req,res)=>{
 
-    const emailId = req.body.emailId;
+    const userId = req.params.userId;
     const data = req.body;
-    
+
+ 
     try{
-        const updateVal = await User.findOneAndUpdate({emailId:emailId},data,{returnDocument:"after"})
+        const ALLOWED_UPDATES = ["userId","firstName","password","age","gender"];
+        const isUpdateAllowed = Object.keys(data).every(k=>ALLOWED_UPDATES.includes(k));
+        if(!isUpdateAllowed){
+            throw new Error("Update not allowed");
+        }
+    
+      
+        const updateVal = await User.findOneAndUpdate({_id:userId},data,{returnDocument:"after"})
         console.log(updateVal);
         res.send(updateVal);
     }
