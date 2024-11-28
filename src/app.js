@@ -1,61 +1,21 @@
 const express = require('express');
-// const { adminAuth } = require('./middlewares/auth');
 const connectDB = require("./config/database");
-const User = require("./models/user");
+const cookieParser = require('cookie-parser');
+
+const authRouter = require('./routes/auth');
+const profileRouter = require('./routes/profile');
+const requestRouter = require('./routes/request');
+
+
 const app = express();
-const {validateSignUpData}= require("./utils/validation")
-const bcrypt = require('bcrypt');
 
 app.use(express.json());
-
-app.post("/signup", async (req, res) => {
-    try {
-    //validation of data
-    validateSignUpData(req);
-    const {firstName,lastName,emailId,password,age,gender} = req.body;
-
-    //encrypt the password
-    const hashPass = await bcrypt.hash(password,10);
-    console.log(hashPass);
-
-    const user = new User({
-
-            firstName,
-            lastName,
-            emailId,
-            password : hashPass,
-            age,
-            gender
-
-        });
+app.use(cookieParser());
 
 
-    await user.save();
-    res.send("user added successfully")
-    
-}
-catch(err) {
-    res.status(400).send("Error: " + err.message)
-}
-});
-
-app.post("/signin", async (req,res) => {
-    try{
-         const {emailId, password}= req.body;
-
-         const user = await User.findOne({emailId :emailId });
-         if(!user) throw new Error("Invalid credentials");
-         
-         const isValidPass = await bcrypt.compare(password, user.password);
-         if(isValidPass) res.send("login succesful");
-         else throw new Error("Invalid credentials");
-         
-    }
-    catch(err){
-        res.status(400).send("ERROR :" + err.message);
-
-    }
-});
+app.use("/",authRouter);
+app.use("/",profileRouter);
+app.use("/",requestRouter);
 
 app.get("/user", async(req,res)=>{
 
@@ -119,75 +79,3 @@ connectDB()
 })
 .catch((err)=>{console.log("DB connection failed")});
 
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-
-//middleware adminAuth to authonticate which handles for all methods GET, POST, PUT etc
-app.use("/admin", adminAuth)
-
-app.use("/admin/alluserdata", (req,res,next)=>{
-   res.send("This is from alluserdata");
-    next();
-})
-
-app.use("/admin/userDelete", (req,res,next)=>{
-    res.send("This is from userDelete");
-     next();
- })
-
-//use work in any method
-app.use("/rajubhai", (req,res)=>{res.send("Hi raju Bhai !! you are the super user ")})
-app.post("/user",(req,res)=>{res.send({firstName: "Venkatesh", lastName: 'B'})})
-// app.get("/user", (req, res) => {
-//     console.log(req.query);
-//     res.send({firstName: "Venkatesh", lastName: 'B'})
-// });
-app.get("/user/:userid", (req, res) => {
-    console.log(req.params);
-    res.send({firstName: "Raju", lastName: 'B'})
-});
-
-//get works only in get method trying in others shows error.
-app.get("/user",[
-    (req,res,next)=>{
-        next();
-    },
-    (req,res,next)=>{
-        next();
-        res.send("This is using GET method 2")
-    },
-    (req,res)=>{
-        res.send("This is using GET method 3")
-    }
-])
-
-app.use("/",(req,res,next)=>{
-    try{
-        throw new Error("abcdefg");        
-        res.send("Hello from the server root")
-}
-catch(err){
-    next(err)
-}
-})
-app.use("/",(err,req,res,next)=>{
-    res.status(500).send("Error occured contact support");
-
-})
-
-
-
-
-*/
-    
