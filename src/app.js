@@ -6,12 +6,10 @@ const authRouter = require('./routes/auth');
 const profileRouter = require('./routes/profile');
 const requestRouter = require('./routes/request');
 
-
 const app = express();
 
 app.use(express.json());
 app.use(cookieParser());
-
 
 app.use("/",authRouter);
 app.use("/",profileRouter);
@@ -32,7 +30,6 @@ app.get("/user", async(req,res)=>{
     }
 
 })
-
 app.delete("/user", async(req,res)=>{
    const userId =  req.body.userId;
    try{
@@ -47,7 +44,6 @@ catch(err){
 }
     
 })
-
 app.patch("/user/:userId",async(req,res)=>{
 
     const userId = req.params.userId;
@@ -72,10 +68,29 @@ app.patch("/user/:userId",async(req,res)=>{
 })
 
 
-connectDB()
-.then(()=>{
-    console.log("DB connection established successfully");
-    app.listen(7777,()=>{console.log("Hello listening to port 7777")});
-})
-.catch((err)=>{console.log("DB connection failed")});
+const startServer = async () => {
+    try {
+        await connectDB();
+        console.log("DB connection established successfully");
+        app.listen(7777,()=>{console.log("Hello listening to port 7777")});
+        // console.log(connectDB());
+
+
+    }
+    catch(err){
+        console.error("Error : " + err.message);
+    }
+};
+
+startServer();
+
+
+// connectDB()
+// .then(()=>{
+//     console.log(connectDB());
+//     console.log("DB connection established successfully");
+//     console.log(connectDB());
+//     app.listen(7777,()=>{console.log("Hello listening to port 7777")});
+// })
+// .catch((err)=>{console.log("DB connection failed")});
 
